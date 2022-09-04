@@ -9,9 +9,9 @@
 
 abstract class APIExtClass
 {
-    public const apiNone       = null;  // неизвестно
-    public const apiSuccess    = 0;     // успех
-    public const apiNotExists  = 1;     // ф-ция не обнаружена
+    public const apiNone       = null;  // Неизвестно
+    public const apiSuccess    = 0;     // Успех
+    public const apiNotExists  = 1;     // Функция не найдена
 
     private ?int $apiResult = self::apiNone;
     private static ?int $apiResultStatic = self::apiNone;
@@ -39,7 +39,7 @@ abstract class APIExtClass
     }
 
     /**
-     * Результат выполнения ф-ции
+     * Результат выполнения функции
      * 
      * @return int              ИмяКласса::apiNone, ИмяКласса::apiSuccess или ИмяКласса::apiNotExists, 
      */
@@ -49,7 +49,7 @@ abstract class APIExtClass
     }
 
     /**
-     * Результат статичного выполнения ф-ции
+     * Результат статичного выполнения функции
      * 
      * @return int              ИмяКласса::apiNone, ИмяКласса::apiSuccess или ИмяКласса::apiNotExists, 
      */
@@ -59,7 +59,7 @@ abstract class APIExtClass
     }
 
     /**
-     * Костыль для аргументов-ссылок
+     * Костыль для параметров-ссылок
      * 
      * @param callable $name    Имя функции (первый параметр $this)
      * @param mixed &...$args   Входящие аргументы, в которых работают ссылки, в отличие от магического метода __call()
@@ -78,7 +78,7 @@ abstract class APIExtClass
     }
 
     /**
-     * Статический костыль для аргументов-ссылок
+     * Статический костыль для параметров-ссылок
      * 
      * @param callable $name    Имя функции
      * @param mixed &...$args   Входящие аргументы, в которых работают ссылки, в отличие от магического метода __callStatic()
