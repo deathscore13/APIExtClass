@@ -16,28 +16,6 @@ abstract class APIExtClass
     private ?int $apiResult = self::apiNone;
     private static ?int $apiResultStatic = self::apiNone;
 
-    public function __call(string $name, array $args): mixed
-    {
-        if (function_exists($name = '\\'.static::class.'APIExtClass\\'.$name))
-        {
-            $this->apiResult = self::apiSuccess;
-            return $name($this, ...$args);
-        }
-        $this->apiResult = self::apiNotExists;
-        return false;
-    }
-
-    public static function __callStatic(string $name, array $args): mixed
-    {
-        if (function_exists($name = '\\'.static::class.'APIExtClass\\'.$name))
-        {
-            self::$apiResultStatic = self::apiSuccess;
-            return $name(...$args);
-        }
-        self::$apiResultStatic = self::apiNotExists;
-        return false;
-    }
-
     /**
      * Результат выполнения функции
      * 
@@ -93,6 +71,28 @@ abstract class APIExtClass
             return $name(...$args);
         }
         $this->apiResult = self::apiNotExists;
+        return false;
+    }
+
+    public function __call(string $name, array $args): mixed
+    {
+        if (function_exists($name = '\\'.static::class.'APIExtClass\\'.$name))
+        {
+            $this->apiResult = self::apiSuccess;
+            return $name($this, ...$args);
+        }
+        $this->apiResult = self::apiNotExists;
+        return false;
+    }
+
+    public static function __callStatic(string $name, array $args): mixed
+    {
+        if (function_exists($name = '\\'.static::class.'APIExtClass\\'.$name))
+        {
+            self::$apiResultStatic = self::apiSuccess;
+            return $name(...$args);
+        }
+        self::$apiResultStatic = self::apiNotExists;
         return false;
     }
 }
