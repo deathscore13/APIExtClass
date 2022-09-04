@@ -1,46 +1,10 @@
 <?php
 
 /**
- * PHP 8.0.0
+ * APIExtClass
+ * 
+ * API extended class for PHP 8.0.0+
  * https://github.com/deathscore13/apiextclass
- * 
- * позволяет расширить класс через namespace. имя namespace = имя класса + APIExtClass
- * первый аргумент не статичной ф-ции будет $this
- * аргументы-ссылки передавать умеет только через apiExec() и apiExecStatic()
- * пример:
- * 
- *  namespace BaseClassAPIExtClass // namespace для поиска методов. может быть несколько с одинаковым именем, лучше вынести в отдельный файл
- *  {
- *  function _echo(object $obj): void // $obj = $this, просто PHP не позволит использовать это имя
- *  {
- *      echo('\BaseClassAPIExtClass\_echo()'.PHP_EOL); // выведем выполнение текущей ф-ции
- *      $obj->test(); // вызовем метод BaseClass::test() для проверки $this
- *  }
- * 
- *  function _echoStatic(): string // $this отсутствует т.к. статический вызов
- *  {
- *      // return у статических/не статических вызовов, и через apiExec()/apiExecStatic() работает как у обычных ф-ций
- *      return '\BaseClassAPIExtClass\_echoStatic()'.PHP_EOL;
- *  }
- *  }
- * 
- *  namespace // глобальный namespace
- *  {
- *  class BaseClass extends APIExtClass // наследие APIExtClass
- *  {
- *      public function test(): void // тестирование вызова из ф-ции в namespace BaseClassAPIExtClass
- *      {
- *          echo('BaseClass::test()'.PHP_EOL); // выведем выполнение текущего метода
- *      }
- *  }
- * 
- *  $q = new BaseClass(); // создание объекта BaseClass
- *  $q->_echo(); // вызов ф-ции \BaseClassAPIExtClass\_echo()
- *  echo(BaseClass::_echoStatic()); // статический вызов ф-ции \BaseClassAPIExtClass\_echoStatic()
- *  BaseClass::_qwerty();
- *  if (BaseClass::apiResultStatic() === BaseClass::apiNotExists) // проверяем нашлась ли ф-ция
- *      echo('APIExtClassRet::apiNotExists'.PHP_EOL); // не нашлась :(
- *  }
  */
 
 abstract class APIExtClass
