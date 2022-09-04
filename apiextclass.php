@@ -2,6 +2,7 @@
 
 /**
  * PHP 8.0.0
+ * https://github.com/deathscore13/apiextclass
  * 
  * позволяет расширить класс через namespace. имя namespace = имя класса + APIExtClass
  * первый аргумент не статичной ф-ции будет $this
