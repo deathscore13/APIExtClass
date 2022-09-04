@@ -1,4 +1,4 @@
-# apiextclass
+# APIExtClass
 ### API extended class for PHP 8.0.0+
 
 Позволяет расширить класс через `namespace`<br>
