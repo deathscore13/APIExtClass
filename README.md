@@ -26,7 +26,7 @@ class BaseClass extends APIExtClass // наследие APIExtClass
 **`baseclassapi.php`**:
 ```php
 // namespace для поиска методов. может быть несколько с одинаковым именем, что позволяет бесконечно расширять класс
-namespace BaseClassAPIExtClass
+namespace BaseClassAPIExtClass;
 
 function _echo(object $obj): void // $obj = $this, просто PHP не позволит использовать это имя
 {
