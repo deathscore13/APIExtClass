@@ -61,5 +61,5 @@ echo(BaseClass::_echoStatic());
 // вызов несуществующей функции
 BaseClass::_qwerty();
 if (BaseClass::apiResultStatic() === BaseClass::apiNotExists) // проверяем нашлась ли функция
-    echo('APIExtClassRet::apiNotExists'.PHP_EOL); // не нашлась
+    echo('BaseClass::apiNotExists'.PHP_EOL); // не нашлась
 ```
