@@ -11,7 +11,6 @@
 2. Статические переменные добавлять нельзя<br><br>
 
 Советую открыть **`ClassAPIExtension.php`** и почитать описания `apiResult()`, `apiResultStatic()`, `apiExec()` и `apiExecStatic()`
-
 <br><br>
 ## Пример добавления методов:
 **`baseclass.php`**:
