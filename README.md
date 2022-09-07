@@ -10,8 +10,16 @@
 <br><br>
 ### Ограничения PHP
 1. Параметры-ссылки работают только через `apiExec()` и `apiExecStatic()`
-2. Нельзя использовать имя `$this`, используйте `$obj` или любое другое имя
+2. Нельзя использовать имена `$this` и `self` вне класса, используйте `$obj` и `$self`, или любые другие имена
 3. Невозможно добавить статические переменные
+
+<br><br>
+## Подключение возможностей
+`use ClassAPIExtensionObject;` - добавление вызовов через объект класса (доступ к `$this`)<br>
+`use ClassAPIExtensionStatic;` - добавление статических вызовов (доступ к `self`)<br>
+`use ClassAPIExtensionVars;` - добавление переменных (не использует `ClassAPIExtensionResult`)<br>
+`use ClassAPIExtension;` - добавление всех возможностей<br>
+`implements ClassAPIExtensionResult` - чтобы вместо `ClassAPIExtensionResult::константа` писать `ИмяКласса::константа`
 
 <br><br>
 ## Пример добавления методов
@@ -20,13 +28,22 @@
 // подключение ClassAPIExtension
 require('ClassAPIExtension.php');
 
-class BaseClass extends ClassAPIExtension // наследие ClassAPIExtension
+class BaseClass implements ClassAPIExtensionResult // наследование ClassAPIExtensionResult (можно обойтись и без этого)
 {
-    // метод для тестирование вызова из функции в namespace BaseClassAPIExtension
+    // подключение возможностей вызова через объект класса и статический вызов
+    use ClassAPIExtensionObject, ClassAPIExtensionStatic;
+    
+    // метод для тестирование вызова через $this из функции в namespace BaseClassAPIExtension
     public function test(): void
     {
         // вывод выполнения метода
         echo('BaseClass::test()'.PHP_EOL);
+    }
+    
+    // метод для тестирования вызова через self из функции в namespace BaseClassAPIExtension
+    public static test2(): void
+    {
+        echo('BaseClass::test2()'.PHP_EOL);
     }
 }
 ```
@@ -35,7 +52,7 @@ class BaseClass extends ClassAPIExtension // наследие ClassAPIExtension
 // namespace для поиска методов. может быть несколько с одинаковым именем, что позволяет бесконечно расширять класс
 namespace BaseClassAPIExtension;
 
-function _echo(object $obj): void // $obj = $this, просто PHP не позволит использовать это имя
+function _echo(object $obj): void // $obj = $this, просто PHP не позволит использовать это имя вне класса
 {
     // вывод выполнения функции
     echo('\BaseClassAPIExtClass\_echo()'.PHP_EOL);
@@ -44,8 +61,11 @@ function _echo(object $obj): void // $obj = $this, просто PHP не поз�
     $obj->test();
 }
 
-function _echoStatic(): string // $this отсутствует т.к. статический вызов
+function _echoStatic($self): string // $self = self, просто PHP не позволит использовать это имя вне класса
 {
+    // вызов статического метода BaseClass::test2()
+    $self::test2();
+    
     // return у статических, не статических вызовов, и через apiExec(), apiExecStatic() работает как у обычных функций
     return '\BaseClassAPIExtension\_echoStatic()'.PHP_EOL;
 }
@@ -67,7 +87,9 @@ echo(BaseClass::_echoStatic());
 
 // вызов несуществующей функции
 BaseClass::_qwerty();
-if (BaseClass::apiResultStatic() === BaseClass::apiNotExists) // проверка существования функции
+
+// проверка существования функции. если не наследован ClassAPIExtensionResult, то ClassAPIExtensionResult::apiNotExists
+if (BaseClass::apiResultStatic() === BaseClass::apiNotExists)
     echo('BaseClass::apiNotExists'.PHP_EOL); // не нашлась
 ```
 <br><br>
@@ -77,8 +99,10 @@ if (BaseClass::apiResultStatic() === BaseClass::apiNotExists) // проверк�
 // подключение ClassAPIExtension
 require('ClassAPIExtension.php');
 
-class BaseClass extends ClassAPIExtension // наследие ClassAPIExtension
+class BaseClass // нет смысла в наследовании ClassAPIExtensionResult
 {
+    // подключение возможности добавления переменных
+    use ClassAPIExtensionVars;
 }
 ```
 **`testclass.php`**:
