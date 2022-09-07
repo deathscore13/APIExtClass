@@ -41,7 +41,7 @@ class BaseClass implements ClassAPIExtensionResult // наследование C
     }
     
     // метод для тестирования вызова через self из функции в namespace BaseClassAPIExtension
-    public static test2(): void
+    public static function test2(): void
     {
         echo('BaseClass::test2()'.PHP_EOL);
     }
