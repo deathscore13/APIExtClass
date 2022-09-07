@@ -7,35 +7,25 @@
  * https://github.com/deathscore13/ClassAPIExtension
  */
 
-abstract class ClassAPIExtension
+interface ClassAPIExtensionResult
 {
     public const apiNone       = null;  // Неизвестно
     public const apiSuccess    = 0;     // Успех
     public const apiNotExists  = 1;     // Функция не найдена
-    
-    private ?int $apiResult = self::apiNone;
-    private static ?int $apiResultStatic = self::apiNone;
-    
-    private array $apiVars = [];
+}
+
+trait ClassAPIExtensionObject
+{
+    private ?int $apiResult = ClassAPIExtensionResult::apiNone;
 
     /**
      * Результат выполнения функции
      * 
-     * @return int              ИмяКласса::apiNone, ИмяКласса::apiSuccess или ИмяКласса::apiNotExists, 
+     * @return int              ClassAPIExtensionResult::apiNone, ClassAPIExtensionResult::apiSuccess или ClassAPIExtensionResult::apiNotExists
      */
     public function apiResult(): int
     {
         return $this->apiResult;
-    }
-
-    /**
-     * Результат статичного выполнения функции
-     * 
-     * @return int              ИмяКласса::apiNone, ИмяКласса::apiSuccess или ИмяКласса::apiNotExists, 
-     */
-    public static function apiResultStatic(): int
-    {
-        return self::$apiResultStatic;
     }
 
     /**
@@ -50,11 +40,37 @@ abstract class ClassAPIExtension
     {
         if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
         {
-            $this->apiResult = self::apiSuccess;
+            $this->apiResult = ClassAPIExtensionResult::apiSuccess;
             return $name($this, ...$args);
         }
-        $this->apiResult = self::apiNotExists;
+        $this->apiResult = ClassAPIExtensionResult::apiNotExists;
         return false;
+    }
+
+    public function __call(string $name, array $args): mixed
+    {
+        if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
+        {
+            $this->apiResult = ClassAPIExtensionResult::apiSuccess;
+            return $name($this, ...$args);
+        }
+        $this->apiResult = ClassAPIExtensionResult::apiNotExists;
+        return false;
+    }
+}
+
+trait ClassAPIExtensionStatic
+{
+    private static ?int $apiResultStatic = ClassAPIExtensionResult::apiNone;
+
+    /**
+     * Результат статичного выполнения функции
+     * 
+     * @return int              ClassAPIExtensionResult::apiNone, ClassAPIExtensionResult::apiSuccess или ClassAPIExtensionResult::apiNotExists
+     */
+    public static function apiResultStatic(): int
+    {
+        return ClassAPIExtensionResult::$apiResultStatic;
     }
 
     /**
@@ -69,21 +85,10 @@ abstract class ClassAPIExtension
     {
         if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
         {
-            $this->apiResult = self::apiSuccess;
-            return $name(...$args);
+            $this->apiResult = ClassAPIExtensionResult::apiSuccess;
+            return $name(static::class, ...$args);
         }
-        $this->apiResult = self::apiNotExists;
-        return false;
-    }
-
-    public function __call(string $name, array $args): mixed
-    {
-        if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
-        {
-            $this->apiResult = self::apiSuccess;
-            return $name($this, ...$args);
-        }
-        $this->apiResult = self::apiNotExists;
+        $this->apiResult = ClassAPIExtensionResult::apiNotExists;
         return false;
     }
 
@@ -91,12 +96,17 @@ abstract class ClassAPIExtension
     {
         if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
         {
-            self::$apiResultStatic = self::apiSuccess;
-            return $name(...$args);
+            self::$apiResultStatic = ClassAPIExtensionResult::apiSuccess;
+            return $name(static::class, ...$args);
         }
-        self::$apiResultStatic = self::apiNotExists;
+        self::$apiResultStatic = ClassAPIExtensionResult::apiNotExists;
         return false;
     }
+}
+
+trait ClassAPIExtensionVars
+{
+    private array $apiVars = [];
 
     public function __set(string $name, mixed $value): void
     {
@@ -117,4 +127,9 @@ abstract class ClassAPIExtension
     {
         unset($this->apiVars[$name]);
     }
+}
+
+trait ClassAPIExtension
+{
+    use ClassAPIExtensionObject, ClassAPIExtensionStatic, ClassAPIExtensionVars;
 }
