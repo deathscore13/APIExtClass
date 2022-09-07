@@ -76,7 +76,7 @@ trait ClassAPIExtensionStatic
     /**
      * Статический костыль для параметров-ссылок
      * 
-     * @param callable $name    Имя функции
+     * @param callable $name    Имя функции (первый параметр self)
      * @param mixed &...$args   Входящие аргументы, в которых работают ссылки, в отличие от магического метода __callStatic()
      * 
      * @return mixed            Возвращаемое значение функции
