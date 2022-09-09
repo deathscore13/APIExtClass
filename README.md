@@ -61,7 +61,7 @@ function _echo(object $obj): void // $obj = $this, просто PHP не поз�
     $obj->test();
 }
 
-function _echoStatic($self): string // $self = self, просто PHP не позволит использовать это имя вне класса
+function _echoStatic(string $self): string // $self = self, просто PHP не позволит использовать это имя вне класса
 {
     // вызов статического метода BaseClass::test2()
     $self::test2();
