@@ -38,7 +38,7 @@ trait ClassAPIExtensionObject
      */
     public function apiExec(callable $name, mixed &...$args): mixed
     {
-        if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
+        if (function_exists($name = '\\'.self::class.'APIExtension\\'.$name))
         {
             $this->apiResult = ClassAPIExtensionResult::apiSuccess;
             return $name($this, ...$args);
@@ -49,7 +49,7 @@ trait ClassAPIExtensionObject
 
     public function __call(string $name, array $args): mixed
     {
-        if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
+        if (function_exists($name = '\\'.self::class.'APIExtension\\'.$name))
         {
             $this->apiResult = ClassAPIExtensionResult::apiSuccess;
             return $name($this, ...$args);
@@ -83,10 +83,10 @@ trait ClassAPIExtensionStatic
      */
     public static function apiExecStatic(callable $name, mixed &...$args): mixed
     {
-        if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
+        if (function_exists($name = '\\'.self::class.'APIExtension\\'.$name))
         {
             $this->apiResult = ClassAPIExtensionResult::apiSuccess;
-            return $name(static::class, ...$args);
+            return $name(self::class, ...$args);
         }
         $this->apiResult = ClassAPIExtensionResult::apiNotExists;
         return false;
@@ -94,10 +94,10 @@ trait ClassAPIExtensionStatic
 
     public static function __callStatic(string $name, array $args): mixed
     {
-        if (function_exists($name = '\\'.static::class.'APIExtension\\'.$name))
+        if (function_exists($name = '\\'.self::class.'APIExtension\\'.$name))
         {
             self::$apiResultStatic = ClassAPIExtensionResult::apiSuccess;
-            return $name(static::class, ...$args);
+            return $name(self::class, ...$args);
         }
         self::$apiResultStatic = ClassAPIExtensionResult::apiNotExists;
         return false;
