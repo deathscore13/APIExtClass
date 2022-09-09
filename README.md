@@ -1,5 +1,5 @@
 # ClassAPIExtension
-### Расширение API классов для PHP 8.0.0+<br>
+### Расширение API классов для PHP 8.0.0+<br><br>
 
 Позволяет расширить класс через `namespace`<br><br>
 Имя `namespace` = имя класса + APIExtension<br><br>
