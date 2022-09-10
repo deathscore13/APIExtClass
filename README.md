@@ -69,6 +69,12 @@ function _echoStatic(string $self): string // $self = self, просто PHP н�
     // return у статических/не статических вызовов, и через apiExec()/apiExecStatic() работает как у обычных функций
     return '\BaseClassAPIExtension\_echoStatic()'.PHP_EOL;
 }
+
+function _changeRef(string $self, int &$value): void // функция для изменения значения по ссылке (только для apiExec() и apiExecStatic())
+{
+    // изменение значения по ссылке
+    $value = 1;
+}
 ```
 **`main.php`**:
 ```php
@@ -91,6 +97,15 @@ BaseClass::_qwerty();
 // проверка существования функции. если не наследован ClassAPIExtensionResult, то ClassAPIExtensionResult::apiNotExists
 if (BaseClass::apiResultStatic() === BaseClass::apiNotExists)
     echo('BaseClass::apiNotExists'.PHP_EOL); // не нашлась
+
+// создание переменной со значением 0
+$value = 0;
+
+// вызов функции для изменения значения по ссылке
+BaseClass::apiExecStatic('_changeRef', $value);
+
+// вывод изменённого значения
+echo('$value = '.$value.PHP_EOL);
 ```
 <br><br>
 ## Пример добавления переменных
