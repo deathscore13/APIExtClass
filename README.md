@@ -1,163 +1,148 @@
-# ClassAPIExtension
+# ClassAPIExtension 1.0.0
 ### Расширение API классов для PHP 8.0.0+<br><br>
 
-Позволяет расширить класс через `namespace`<br><br>
-Имя `namespace` = имя класса + APIExtension<br><br>
-Первый параметр не статичной функции будет `$this`<br><br>
-Переменные можно проверять через `isset()` и удалять через `unset()`<br><br>
-Советую открыть **`ClassAPIExtension.php`** и почитать описания `apiResult()`, `apiResultStatic()`, `apiExec()` и `apiExecStatic()`
+Позволяет добавить в класс объектные/статические методы и статические проперти<br><br>
+Для доступа к **`private`** и **`protected`** методам/проперти используйте [Reflection API](https://www.php.net/manual/ru/book.reflection.php)
+Советую открыть **`ClassAPIExtension.php`** и почитать описания `__apiAutoload()`, `__apiAddMethod()`, `__apiMethodExists()`, `__apiCall()`, `__apiAutoloadStatic()`, `__apiAddMethodStatic()`, `__apiMethodExistsStatic()`, `__apiCallStatic()`, `__apiPropertyStatic()`, `__apiIssetStatic()` и `__apiUnsetStatic()`
 
 <br><br>
 ### Ограничения PHP
-1. Параметры-ссылки работают только через `apiExec()` и `apiExecStatic()`
-2. Нельзя использовать имена `$this` и `self` вне класса, используйте `$obj` и `$self`, или любые другие имена
-3. Невозможно добавить статические переменные
+1. Передача параметров по ссылке работают только через `__apiCall()` и `__apiCallStatic()`
+2. Возврат значения по ссылке работает только через `__apiCall()` и `__apiCallStatic()`
+3. Нельзя использовать имена `$this` и `self` вне класса, используйте `$obj` и `$self` или любые другие имена
 
 <br><br>
 ## Подключение возможностей
-`use ClassAPIExtensionObject;` - добавление вызовов через объект класса (доступ к `$this`)<br>
-`use ClassAPIExtensionStatic;` - добавление статических вызовов (доступ к `self`)<br>
-`use ClassAPIExtensionVars;` - добавление переменных (не использует `ClassAPIExtensionResult`)<br>
-`use ClassAPIExtension;` - добавление всех возможностей<br>
-`implements ClassAPIExtensionResult` - чтобы вместо `ClassAPIExtensionResult::константа` писать `ИмяКласса::константа`
+`use ClassAPIExtensionObject;` - добавление объектных методов (доступ к `self` и `$this`)<br>
+`use ClassAPIExtensionStatic;` - добавление статических методов (доступ к `self`)<br>
+`use ClassAPIExtensionPropertyStatic;` - добавление статических проперти<br>
+`use ClassAPIExtension;` - добавление всех возможностей
 
 <br><br>
 ## Пример добавления методов
-**`baseclass.php`**:
+**`BaseClass.php`**:
 ```php
 // подключение ClassAPIExtension
 require('ClassAPIExtension.php');
 
-class BaseClass implements ClassAPIExtensionResult // наследование ClassAPIExtensionResult (можно обойтись и без этого)
+class BaseClass
 {
     // подключение возможностей вызова через объект класса и статический вызов
     use ClassAPIExtensionObject, ClassAPIExtensionStatic;
     
-    // метод для тестирование вызова через $this из функции в namespace BaseClassAPIExtension
+    // метод для тестирование вызова через $this из добавленной функции
     public function test(): void
     {
         // вывод выполнения метода
         echo('BaseClass::test()'.PHP_EOL);
     }
     
-    // метод для тестирования вызова через self из функции в namespace BaseClassAPIExtension
-    public static function test2(): void
+    // приватный метод для тестирования вызова через self из добавленной функции
+    private static function test2(): void
     {
+        // вывод выполнения статического метода
         echo('BaseClass::test2()'.PHP_EOL);
     }
 }
 ```
-**`baseclassapiextension.php`**:
+**`BaseClassAPI/method.php`**:
 ```php
-// namespace для поиска методов. может быть несколько с одинаковым именем, что позволяет бесконечно расширять класс
-namespace BaseClassAPIExtension;
-
-function _echo(object $obj): void // $obj = $this, просто PHP не позволит использовать это имя вне класса
+// реализация нового метода
+return function (string $self, object $obj): void
 {
-    // вывод выполнения функции
-    echo('\BaseClassAPIExtClass\_echo()'.PHP_EOL);
-    
-    // вызов метода BaseClass::test() для проверки $this
+    // вызов BaseClass::test()
     $obj->test();
-}
 
-function _echoStatic(string $self): string // $self = self, просто PHP не позволит использовать это имя вне класса
-{
-    // вызов статического метода BaseClass::test2()
-    $self::test2();
-    
-    // return у статических/не статических вызовов, и через apiExec()/apiExecStatic() работает как у обычных функций
-    return '\BaseClassAPIExtension\_echoStatic()'.PHP_EOL;
+    // вызов приватного статического метода (читайте документацию к Reflection API)
+    $r = new ReflectionMethod($self, 'test2');
+    $r->setAccessible(true);
+    $r->invoke(null);
 }
-
-function _changeRef(string $self, int &$value): void // функция для изменения значения по ссылке (только для apiExec() и apiExecStatic())
+```
+**`BaseClassAPI/static/methodStatic.php`**:
+```php
+// реализация нового статического метода
+return function &(string $self, int &$value): void
 {
-    // изменение значения по ссылке
-    $value = 1;
+    // получение и возврат значения по ссылке
+    return $value;
 }
 ```
 **`main.php`**:
 ```php
-// подключение файлов с классом и "новыми" методами класса
-require('baseclass.php');
-require('baseclassapiextension.php');
+// подключение класса
+require('BaseClass.php');
 
 // создание объекта BaseClass
-$q = new BaseClass();
+$b = new BaseClass();
 
-// вызов функции \BaseClassAPIExtension\_echo()
-$q->_echo();
+// регистрация функции для автозагрузки методов
+$b->__apiAutoload(function (string $name): ?callable
+{
+    $name = 'BaseClassAPI/'.$name.'.php';
+    if (is_file($name))
+        return require($name);
+    
+    return null;
+});
 
-// статический вызов функции \BaseClassAPIExtension\_echoStatic()
-echo(BaseClass::_echoStatic());
+// регистрация функции для автозагрузки статических методов
+BaseClass::__apiAutoloadStatic(function (string $name): ?callable
+{
+    $name = 'BaseClassAPI/static/'.$name.'.php';
+    if (is_file($name))
+        return require($name);
+    
+    return null;
+});
 
-// вызов несуществующей функции
-BaseClass::_qwerty();
+// вызов метода method(). так как __apiAddMethod() не был выполнен, то будет совершена автозагрузка
+$b->method();
 
-// проверка существования функции. если не наследован ClassAPIExtensionResult, то ClassAPIExtensionResult::apiNotExists
-if (BaseClass::apiResultStatic() === BaseClass::apiNotExists)
-    echo('BaseClass::apiNotExists'.PHP_EOL); // не нашлась
-
-// создание переменной со значением 0
-$value = 0;
-
-// вызов функции для изменения значения по ссылке
-BaseClass::apiExecStatic('_changeRef', $value);
-
-// вывод изменённого значения
-echo('$value = '.$value.PHP_EOL);
+// вызов статического метода methodStatic() с рабочими ссылками
+$value = 123;
+$value2 = &BaseClass::__apiCallStatic('methodStatic', $value);
+$value2 = 321;
+echo($value.PHP_EOL);
 ```
 <br><br>
-## Пример добавления переменных
-**`baseclass.php`**:
+## Пример добавления проперти
+**`BaseClass.php`**:
 ```php
 // подключение ClassAPIExtension
 require('ClassAPIExtension.php');
 
-class BaseClass // нет смысла в наследовании ClassAPIExtensionResult
+class BaseClass
 {
-    // подключение возможности добавления переменных
-    use ClassAPIExtensionVars;
-}
-```
-**`testclass.php`**:
-```php
-class TestClass // новый класс, который будет записан в переменную
-{
-    // метод для тестирования
-    public function _test(): void
-    {
-        // вывод выполнения метода
-        echo('TestClass::test()'.PHP_EOL);
-    }
+    // подключение возможности добавления статических проперти
+    use ClassAPIExtensionPropertyStatic;
 }
 ```
 **`main.php`**:
 ```php
-// подключение файлов с классом и "новым" классом для записи в переменную
-require('baseclass.php');
-require('testclass.php');
+// подключение класса
+require('BaseClass.php');
 
 // создание объекта BaseClass
-$q = new BaseClass();
+$b = new BaseClass();
 
-// добавление объекта BaseClass в переменную test
-$q->test = new BaseClass();
+// добавление проперти
+$b->property = 1;
 
-// добавление объекта TestClass в переменную test2 объекта в переменной test
-$q->test->test2 = new TestClass();
+// проверка наличия проперти
+if (isset($b->property))
+    echo('BaseClass::$property = '.$b->property.PHP_EOL); // вывод значения проперти
 
-// вызов метода из объекта TestClass
-$q->test->test2->_test();
+// удаление проперти
+unset($b->property);
 
+// добавление статического проперти
+$ps = &BaseClass::__apiPropertyStatic('propertyStatic', 2);
 
-// создание обычной переменной
-$q->var1 = 1;
+// проверка наличия статического проперти
+if (BaseClass::__apiIssetStatic('propertyStatic'))
+    echo('BaseClass::$propertyStatic = '.$ps.PHP_EOL); // вывод значения статического проперти
 
-// проверка наличия переменной
-if (isset($q->var1))
-    echo('BaseClass::$var1 = '.$q->var1.PHP_EOL); // вывод значения переменной
-
-// удаление переменной
-unset($q->var1);
+// удаление статического проперти
+BaseClass::__apiUnsetStatic('propertyStatic');
 ```
