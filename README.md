@@ -2,7 +2,7 @@
 ### Расширение API классов для PHP 8.0.0+<br><br>
 
 Позволяет добавить в класс объектные/статические методы и статические проперти<br><br>
-Для доступа к **`private`** и **`protected`** методам/проперти используйте [Reflection API](https://www.php.net/manual/ru/book.reflection.php)
+Для доступа к **`private`** и **`protected`** методам/проперти используйте [Reflection API](https://www.php.net/manual/ru/book.reflection.php)<br><br>
 Советую открыть **`ClassAPIExtension.php`** и почитать описания `__apiAutoload()`, `__apiAddMethod()`, `__apiMethodExists()`, `__apiCall()`, `__apiAutoloadStatic()`, `__apiAddMethodStatic()`, `__apiMethodExistsStatic()`, `__apiCallStatic()`, `__apiPropertyStatic()`, `__apiIssetStatic()` и `__apiUnsetStatic()`
 
 <br><br>
