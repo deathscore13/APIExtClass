@@ -6,6 +6,11 @@
 Советую открыть **`ClassAPIExtension.php`** и почитать описания `__apiAutoload()`, `__apiAddMethod()`, `__apiMethodExists()`, `__apiCall()`, `__apiAutoloadStatic()`, `__apiAddMethodStatic()`, `__apiMethodExistsStatic()`, `__apiCallStatic()`, `__apiPropertyStatic()`, `__apiIssetStatic()` и `__apiUnsetStatic()`
 
 <br><br>
+### Требования
+1. PHP 8.0.0+
+2. Модуль [Reflection](https://www.php.net/manual/ru/book.reflection.php)
+
+<br><br>
 ### Ограничения PHP
 1. Передача параметров по ссылке работают только через `__apiCall()` и `__apiCallStatic()`
 2. Возврат значения по ссылке работает только через `__apiCall()` и `__apiCallStatic()`
