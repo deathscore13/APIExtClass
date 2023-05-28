@@ -28,7 +28,7 @@
 **`BaseClass.php`**:
 ```php
 // подключение ClassAPIExtension
-require('ClassAPIExtension.php');
+require('ClassAPIExtension/ClassAPIExtension.php');
 
 class BaseClass
 {
@@ -115,7 +115,7 @@ echo($value.PHP_EOL);
 **`BaseClass.php`**:
 ```php
 // подключение ClassAPIExtension
-require('ClassAPIExtension.php');
+require('ClassAPIExtension/ClassAPIExtension.php');
 
 class BaseClass
 {
