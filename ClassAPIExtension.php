@@ -82,9 +82,7 @@ trait ClassAPIExtensionObject
             {
                 $ret = $callback($name);
 
-                if ($ret !== null &&
-                    (is_string($ret) && function_exists($ret) ||
-                    is_callable($ret)))
+                if ($ret !== null && is_callable($ret))
                 {
                     $this->__apiAddMethod($name, $ret);
                     break;
@@ -186,9 +184,7 @@ trait ClassAPIExtensionStatic
             {
                 $ret = $callback($name);
 
-                if ($ret !== null &&
-                    (is_string($ret) && function_exists($ret) ||
-                    is_callable($ret)))
+                if ($ret !== null && is_callable($ret))
                 {
                     self::__apiAddMethodStatic($name, $ret);
                     break;
